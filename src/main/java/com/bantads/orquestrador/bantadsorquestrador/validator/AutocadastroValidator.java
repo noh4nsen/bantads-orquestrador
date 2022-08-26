@@ -1,7 +1,5 @@
 package com.bantads.orquestrador.bantadsorquestrador.validator;
 
-import java.math.BigDecimal;
-
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.ClienteDTO;
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.EnderecoDTO;
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.UsuarioDTO;
@@ -18,10 +16,8 @@ public final class AutocadastroValidator {
     }
 
     private static boolean validateCliente(ClienteDTO clienteDTO) {
-        if (clienteDTO.getNome().isEmpty() ||
-                clienteDTO.getNome().isBlank() ||
-                clienteDTO.getCpf().isEmpty() ||
-                clienteDTO.getCpf().isBlank() ||
+        if (CommonValidator.validateString(clienteDTO.getNome()) ||
+                CommonValidator.validateString(clienteDTO.getCpf()) ||
                 clienteDTO.getCpf().length() != 11 ||
                 clienteDTO.getSalario().doubleValue() <= 0.0 ||
                 clienteDTO.getEndereco() == null ||
@@ -34,14 +30,10 @@ public final class AutocadastroValidator {
     }
 
     private static boolean validateEndereco(EnderecoDTO enderecoDTO) {
-        if (enderecoDTO.getCidade().isEmpty() ||
-                enderecoDTO.getCidade().isBlank() ||
-                enderecoDTO.getLogradouro().isEmpty() ||
-                enderecoDTO.getLogradouro().isBlank() ||
-                enderecoDTO.getBairro().isEmpty() ||
-                enderecoDTO.getBairro().isBlank() ||
-                enderecoDTO.getCidade().isEmpty() ||
-                enderecoDTO.getCidade().isBlank() ||
+        if (CommonValidator.validateString(enderecoDTO.getCep()) ||
+                CommonValidator.validateString(enderecoDTO.getLogradouro()) ||
+                CommonValidator.validateString(enderecoDTO.getBairro()) ||
+                CommonValidator.validateString(enderecoDTO.getCidade()) ||
                 enderecoDTO.getNumero() <= 0 ||
                 enderecoDTO.getEstado() == null) {
             return false;
@@ -51,8 +43,7 @@ public final class AutocadastroValidator {
     }
 
     private static boolean validateUsuario(UsuarioDTO usuarioDTO) {
-        if (usuarioDTO.getEmail().isEmpty() ||
-                usuarioDTO.getEmail().isBlank() ||
+        if (CommonValidator.validateString(usuarioDTO.getEmail()) ||
                 usuarioDTO.getTipoUsuario() == null) {
             return false;
         } else {
