@@ -23,7 +23,7 @@ public final class AutocadastroValidator {
                 clienteDTO.getCpf().isEmpty() ||
                 clienteDTO.getCpf().isBlank() ||
                 clienteDTO.getCpf().length() != 11 ||
-                clienteDTO.getSalario() == BigDecimal.ZERO ||
+                clienteDTO.getSalario().doubleValue() <= 0.0 ||
                 clienteDTO.getEndereco() == null ||
                 clienteDTO.getUsuario() == null) {
             return false;
