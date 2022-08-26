@@ -20,7 +20,7 @@ import com.bantads.orquestrador.bantadsorquestrador.validator.AutocadastroValida
 @CrossOrigin
 @RestController
 @RequestMapping("/autocadastro")
-public class OrquestradorController {
+public class AutoCadastroController {
     @Autowired
     private ModelMapper mapper;
 
