@@ -1,5 +1,6 @@
 package com.bantads.orquestrador.bantadsorquestrador.services.Cliente;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,11 @@ public class SenderCliente {
     @Autowired
     private Queue queueCliente;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     public void send(Cliente cliente) {
-        this.template.convertAndSend(this.queueCliente.getName(), cliente);
+        String json = modelMapper.map(cliente, String.class);
+        this.template.convertAndSend(this.queueCliente.getName(), json);
     }
 }
