@@ -25,8 +25,7 @@ public final class CadastroGerenteValidator {
     }
 
     private static boolean validateUsuario(UsuarioDTO usuarioDTO) {
-        if (CommonValidator.validateString(usuarioDTO.getEmail()) ||
-                usuarioDTO.getTipoUsuario() == null) {
+        if (CommonValidator.validateString(usuarioDTO.getEmail())) {
             return false;
         } else {
             return true;

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.GerenteDTO;
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.UsuarioDTO;
+import com.bantads.orquestrador.bantadsorquestrador.mapper.GerenteMapper;
+import com.bantads.orquestrador.bantadsorquestrador.mapper.UsuarioMapper;
+import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.TipoUsuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.Usuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.gerente.Gerente;
+import com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao.SenderAutenticacao;
+import com.bantads.orquestrador.bantadsorquestrador.services.Gerente.SenderGerente;
 import com.bantads.orquestrador.bantadsorquestrador.validator.CadastroGerenteValidator;
 
 @CrossOrigin
@@ -24,34 +30,31 @@ public class CadastroGerenteController {
     @Autowired
     private ModelMapper mapper;
 
-    @PostMapping("/cadastro")
-    ResponseEntity<Gerente> cadastro(@RequestBody GerenteDTO gerenteDTO) {
+    @Autowired
+    private SenderGerente senderGerente;
+
+    @Autowired
+    private SenderAutenticacao senderAutenticacao;
+
+    @PostMapping
+    ResponseEntity<Object> cadastro(@RequestBody GerenteDTO gerenteDTO) {
         try {
             if (CadastroGerenteValidator.validate(gerenteDTO)) {
                 UUID saga = UUID.randomUUID();
-                Gerente gerente = mapGerente(gerenteDTO, saga);
-                Usuario usuario = mapUsuario(gerenteDTO.getUsuario(), saga);
 
-                return ResponseEntity.ok().build();
+                Usuario usuario = UsuarioMapper.map(gerenteDTO.getUsuario(), saga, mapper);
+                usuario.setTipoUsuario(TipoUsuario.Gerente);
+                Gerente gerente = GerenteMapper.map(gerenteDTO, saga, usuario.getId(), mapper);
+
+                senderGerente.send(gerente);
+                senderAutenticacao.send(usuario);
+            
+                return new ResponseEntity<Object>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.badRequest().build();
             }
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    private Gerente mapGerente(GerenteDTO gerenteDTO, UUID saga) {
-        Gerente gerente = mapper.map(gerenteDTO, Gerente.class);
-        gerente.setId(UUID.randomUUID());
-        gerente.setSaga(saga);
-        return gerente;
-    }
-
-    private Usuario mapUsuario(UsuarioDTO usuarioDTO, UUID saga) {
-        Usuario usuario = mapper.map(usuarioDTO, Usuario.class);
-        usuario.setId(UUID.randomUUID());
-        usuario.setSaga(saga);
-        return usuario;
     }
 }

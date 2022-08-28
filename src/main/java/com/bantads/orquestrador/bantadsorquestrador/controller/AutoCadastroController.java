@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,47 +13,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.ClienteDTO;
-import com.bantads.orquestrador.bantadsorquestrador.DTOs.UsuarioDTO;
+import com.bantads.orquestrador.bantadsorquestrador.mapper.ClienteMapper;
+import com.bantads.orquestrador.bantadsorquestrador.mapper.UsuarioMapper;
+import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.TipoUsuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.Usuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.cliente.Cliente;
+import com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao.SenderAutenticacao;
+import com.bantads.orquestrador.bantadsorquestrador.services.Cliente.SenderCliente;
 import com.bantads.orquestrador.bantadsorquestrador.validator.AutocadastroValidator;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/autocadastro")
+@RequestMapping("/cliente")
 public class AutoCadastroController {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private SenderCliente senderCliente;
+
+    @Autowired
+    private SenderAutenticacao senderAutenticacao;
+
     @PostMapping
-    ResponseEntity<Cliente> cadastro(@RequestBody ClienteDTO clienteDTO) {
+    ResponseEntity<Object> cadastro(@RequestBody ClienteDTO clienteDTO) {
         try {
             if (AutocadastroValidator.validate(clienteDTO)) {
                 UUID saga = UUID.randomUUID();
-                Cliente cliente = mapCliente(clienteDTO, saga);
-                Usuario usuario = mapUsuario(clienteDTO.getUsuario(), saga);
 
-                
-                return ResponseEntity.ok().build();
+                Usuario usuario = UsuarioMapper.map(clienteDTO.getUsuario(), saga, mapper);
+                usuario.setTipoUsuario(TipoUsuario.Cliente);
+                Cliente cliente = ClienteMapper.map(clienteDTO, saga, usuario.getId(), mapper);
+
+                senderCliente.send(cliente);
+                senderAutenticacao.send(usuario);
+
+                return new ResponseEntity<Object>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.badRequest().build();
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    private Cliente mapCliente(ClienteDTO clienteDTO, UUID saga) {
-        Cliente cliente = mapper.map(clienteDTO, Cliente.class);
-        cliente.setId(UUID.randomUUID());
-        cliente.setSaga(saga);
-        return cliente;
-    }
-
-    private Usuario mapUsuario(UsuarioDTO usuarioDTO, UUID saga) {
-        Usuario usuario = mapper.map(usuarioDTO, Usuario.class);
-        usuario.setId(UUID.randomUUID());
-        usuario.setSaga(saga);
-        return usuario;
     }
 }
