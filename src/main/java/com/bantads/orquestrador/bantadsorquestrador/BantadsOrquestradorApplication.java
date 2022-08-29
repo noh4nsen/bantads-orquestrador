@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao.SenderAutenticacao;
 import com.bantads.orquestrador.bantadsorquestrador.services.Cliente.SenderCliente;
 import com.bantads.orquestrador.bantadsorquestrador.services.Gerente.SenderGerente;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @EnableRabbit
 @SpringBootApplication
@@ -23,7 +24,12 @@ public class BantadsOrquestradorApplication {
 		return new ModelMapper();
 	}
 
-	@Bean 
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
+	}
+
+	@Bean
 	public SenderCliente senderC() {
 		return new SenderCliente();
 	}
