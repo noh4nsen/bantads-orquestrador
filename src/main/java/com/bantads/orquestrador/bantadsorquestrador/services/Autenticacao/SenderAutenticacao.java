@@ -1,6 +1,5 @@
 package com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

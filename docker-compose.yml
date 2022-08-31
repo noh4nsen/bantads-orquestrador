@@ -14,3 +14,5 @@ services:
 networks:
   bantads-net:
     driver: bridge
+    external: true
+    name: bantads-net
