@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao.SenderAutenticacao;
 import com.bantads.orquestrador.bantadsorquestrador.services.Cliente.SenderCliente;
+import com.bantads.orquestrador.bantadsorquestrador.services.Conta.SenderGerenteConta;
 import com.bantads.orquestrador.bantadsorquestrador.services.Gerente.SenderGerente;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,5 +43,10 @@ public class BantadsOrquestradorApplication {
 	@Bean
 	public SenderGerente senderG() {
 		return new SenderGerente();
+	}
+
+	@Bean
+	public SenderGerenteConta senderGC() {
+		return new SenderGerenteConta();
 	}
 }

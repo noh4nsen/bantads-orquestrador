@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.orquestrador.bantadsorquestrador.DTOs.GerenteDTO;
-import com.bantads.orquestrador.bantadsorquestrador.DTOs.UsuarioDTO;
 import com.bantads.orquestrador.bantadsorquestrador.mapper.GerenteMapper;
 import com.bantads.orquestrador.bantadsorquestrador.mapper.UsuarioMapper;
 import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.TipoUsuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.autenticacao.Usuario;
 import com.bantads.orquestrador.bantadsorquestrador.model.gerente.Gerente;
 import com.bantads.orquestrador.bantadsorquestrador.services.Autenticacao.SenderAutenticacao;
+import com.bantads.orquestrador.bantadsorquestrador.services.Conta.SenderGerenteConta;
 import com.bantads.orquestrador.bantadsorquestrador.services.Gerente.SenderGerente;
 import com.bantads.orquestrador.bantadsorquestrador.validator.CadastroGerenteValidator;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/gerente")
+@RequestMapping("/gerentes")
 public class CadastroGerenteController {
     @Autowired
     private ModelMapper mapper;
@@ -35,6 +35,9 @@ public class CadastroGerenteController {
 
     @Autowired
     private SenderAutenticacao senderAutenticacao;
+
+    @Autowired
+    private SenderGerenteConta senderGerenteConta;
 
     @PostMapping
     ResponseEntity<Object> cadastro(@RequestBody GerenteDTO gerenteDTO) {
@@ -48,7 +51,8 @@ public class CadastroGerenteController {
 
                 senderGerente.send(gerente);
                 senderAutenticacao.send(usuario);
-            
+                senderGerenteConta.send(gerente);
+
                 return new ResponseEntity<Object>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.badRequest().build();
