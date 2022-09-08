@@ -25,7 +25,7 @@ import com.bantads.orquestrador.bantadsorquestrador.validator.CadastroGerenteVal
 
 @CrossOrigin
 @RestController
-@RequestMapping("/gerente")
+@RequestMapping("/gerentes")
 public class CadastroGerenteController {
     @Autowired
     private ModelMapper mapper;
