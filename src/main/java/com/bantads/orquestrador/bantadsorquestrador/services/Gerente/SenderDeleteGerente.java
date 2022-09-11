@@ -22,7 +22,6 @@ public class SenderDeleteGerente {
     private ObjectMapper objectMapper;
 
     public void send(UUID id) throws JsonProcessingException {
-        String json = objectMapper.writeValueAsString(id);
-        this.template.convertAndSend(this.queueDeleteGerente.getName(), json);
+        this.template.convertAndSend(this.queueDeleteGerente.getName(), id);
     }
 }
